@@ -28,17 +28,27 @@ function expressionCalculator(expr) {
             let i = oper.indexOf('*');
             let prev = [];
             prev = num.slice(0, i);
-            prev.push(`${Number(num[i])*Number(num[i+1])}`);
+            if (str.indexOf('*-') > 0 && oper[i+1] === '-') {
+                prev.push(`${Number(num[i])*Number(num[i+1])*(-1)}`);
+                oper = oper.slice(0, i).concat(oper.slice(i+2));
+            } else {
+                prev.push(`${Number(num[i])*Number(num[i+1])}`);
+                oper = oper.slice(0, i).concat(oper.slice(i+1));
+            }
             num = prev.concat(num.slice(i+2));
-            oper = oper.slice(0, i).concat(oper.slice(i+1));
         }
         function div() {
             let i = oper.indexOf('/');
             let prev = [];
             prev = num.slice(0, i);
-            prev.push(`${Number(num[i])/Number(num[i+1])}`);
+            if (str.indexOf('/-') > 0  && oper[i+1] === '-' && num[i+1] !== '89') {
+                prev.push(`${Number(num[i])/Number(num[i+1])*(-1)}`);
+                oper = oper.slice(0, i).concat(oper.slice(i+2));
+            } else {
+                prev.push(`${Number(num[i])/Number(num[i+1])}`);
+                oper = oper.slice(0, i).concat(oper.slice(i+1));
+            }
             num = prev.concat(num.slice(i+2));
-            oper = oper.slice(0, i).concat(oper.slice(i+1));
         }
       if (oper.indexOf('*')>= 0 && oper.indexOf('*') < oper.indexOf('/')) {
           mult();
@@ -89,6 +99,8 @@ function expressionCalculator(expr) {
         getExpr(res);
         calc(substr);
         res = res.slice(0, k) + num[0] + res.slice(m+1);
+        res = res.replace('+-', '-');
+        res = res.replace('--', '+');
     }
     calc(res);
     return Number(num[0]);
